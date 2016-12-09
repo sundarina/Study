@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import java.awt.Font;
 
 public class App extends JFrame implements ListSelectionListener {
 
@@ -123,33 +124,33 @@ public class App extends JFrame implements ListSelectionListener {
 		panel_1.add(lblName);
 
 		textFieldName = new JTextField("Имя устройства");
+		textFieldName.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldName);
 		textFieldName.setColumns(10);
-		
 
 		lblPower = new JLabel("Power");
 		panel_1.add(lblPower);
 
 		textFieldPower = new JTextField("Мощность");
+		textFieldPower.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldPower);
 		textFieldPower.setColumns(10);
-		
 
 		lblRam = new JLabel("RAM");
 		panel_1.add(lblRam);
 
 		textFieldRAM = new JTextField("Оперативная память");
+		textFieldRAM.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldRAM);
 		textFieldRAM.setColumns(10);
-		
 
 		lblHdd = new JLabel("HDD");
 		panel_1.add(lblHdd);
 
 		textFieldHDD = new JTextField("Жесткий диск");
+		textFieldHDD.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldHDD);
 		textFieldHDD.setColumns(10);
-		
 
 		// if (i == list.getSelectedIndex()) {
 
@@ -186,6 +187,7 @@ public class App extends JFrame implements ListSelectionListener {
 							if (hp instanceof Computer) {
 								textFieldName.setText(hp.getName());
 								textFieldPower.setText(hp.getPower() + "");
+
 								textFieldHDD.setText(((Computer) hp).getHdd() + "");
 								textFieldRAM.setText(((Computer) hp).getRam() + "");
 								textFieldHDD.setVisible(true);
@@ -216,10 +218,8 @@ public class App extends JFrame implements ListSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				// нужно ли в пустой конструктор проверка try-catch
-
-				HomeApp appH = new HomeApp();
-				appH.setName("Устройство");
+				HomeApp appH = new Computer();
+				appH.setName("Компьютер");
 
 				listModel.addElement(appH.getName());
 
@@ -234,8 +234,6 @@ public class App extends JFrame implements ListSelectionListener {
 				list.ensureIndexIsVisible(index);
 			}
 		});
-
-		// setName(name), setPower(power), setRam(ram), setHdd(hdd)
 
 		btnDEL = new JButton("delete");
 		panel_2.add(btnDEL);
@@ -317,13 +315,12 @@ public class App extends JFrame implements ListSelectionListener {
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(contentPane, "Неверный формат числа");
 							}
-							
-							
-							
-//								JOptionPane.showMessageDialog(contentPane,
-//										"Неверный формат числа. Возможный диапазон RAM: от 4 до 32");
-//								textFieldRAM.setEditable(true);
-								
+
+							// JOptionPane.showMessageDialog(contentPane,
+							// "Неверный формат числа. Возможный диапазон RAM:
+							// от 4 до 32");
+							// textFieldRAM.setEditable(true);
+
 							try {
 								((Computer) hp).setRam(Integer.parseInt(textFieldRAM.getText()));
 								textFieldRAM.setEnabled(false);
@@ -336,16 +333,38 @@ public class App extends JFrame implements ListSelectionListener {
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(contentPane, "Неверный формат числа");
 							}
-							
-//					
-//							((Integer.parseInt(textFieldRAM.getText()) != 4 
-//									|| (Integer.parseInt(textFieldRAM.getText()) != 8))
-//									|| (Integer.parseInt(textFieldRAM.getText()) != 16)
-//									|| (Integer.parseInt(textFieldRAM.getText()) != 32));
-								
-								
 
+							if ((Integer.parseInt(textFieldRAM.getText()) == 4)
+									|| (Integer.parseInt(textFieldRAM.getText()) == 8)
+									|| (Integer.parseInt(textFieldRAM.getText()) == 16)
+									|| (Integer.parseInt(textFieldRAM.getText()) == 32)) {
+
+								((Computer) hp).setRam(Integer.parseInt(textFieldRAM.getText()));
+								textFieldRAM.setEnabled(false);
+								list.setEnabled(true);
+
+							} else {
+								JOptionPane.showMessageDialog(contentPane,
+										"Неверный формат числа. Возможный диапазон RAM: от 4 до 32");
+								textFieldRAM.setEnabled(true);
+								list.setEnabled(false);
+
+							}
+
+							for (int i = 250; i <= 5120; i = i + 250) {
+
+								if (Integer.parseInt(textFieldHDD.getText()) == i) {
+									((Computer) hp).setHdd(Integer.parseInt(textFieldHDD.getText()));
+									textFieldHDD.setEnabled(false);
+									list.setEnabled(true);
+								} 
+								 JOptionPane.showMessageDialog(contentPane,
+										 "Неверный формат числа. Возможныйдиапазон HDD: от 250 до 5120 гигабайт");
+									textFieldHDD.setEnabled(true);
+									list.setEnabled(false);
 							
+								
+							}
 
 						}
 					}
@@ -487,7 +506,7 @@ class Mouse extends HomeApp {
 		if (this.validate(power)) {
 			this.power = Integer.parseInt(power);
 		} else {
-			throw new Exception("Неверный формат  поля Power");
+			throw new Exception("Неверный формат поля Power");
 		}
 	}
 
@@ -510,7 +529,7 @@ class Monitor extends HomeApp {
 		if (this.validate(power)) {
 			this.power = Integer.parseInt(power);
 		} else {
-			throw new Exception("Неверный формат  поля Power");
+			throw new Exception("Неверный формат поля Power");
 		}
 	}
 
