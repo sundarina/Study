@@ -28,7 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import java.awt.Font;
 
-public class App extends JFrame implements ListSelectionListener {
+public class App extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textFieldName;
@@ -44,7 +44,6 @@ public class App extends JFrame implements ListSelectionListener {
 	private JLabel lblPower;
 	private JLabel lblRam;
 	private JLabel lblHdd;
-	// private JLabel lblType;
 	private JButton btnEDIT;
 	private JButton btnSAVE;
 	JOptionPane except;
@@ -68,10 +67,10 @@ public class App extends JFrame implements ListSelectionListener {
 	public App() throws Exception {
 
 		applist = new ArrayList<HomeApp>();
-		applist.add(new Monitor("Монитор", "1800"));
-		applist.add(new Mouse("Мышь", "200"));
-		applist.add(new Keyboard("Клавиатура", "400"));
-		applist.add(new Computer("Компьютер", "2200", "16", "500"));
+		applist.add(new Monitor("Монитор", "30"));
+		applist.add(new Mouse("Мышь", "1"));
+		applist.add(new Keyboard("Клавиатура", "2"));
+		applist.add(new Computer("Компьютер", "400", "16", "7"));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -88,38 +87,6 @@ public class App extends JFrame implements ListSelectionListener {
 		panel.add(panel_1, BorderLayout.EAST);
 		panel_1.setLayout(new GridLayout(10, 1));
 
-		// lblType = new JLabel("Type");
-		// panel_1.add(lblType);
-
-		// JComboBox comboBox = new JComboBox();
-		//
-		// for (HomeApp hp : applist) {
-		// String hpType;
-		// comboBox.addItem(hp.getName());
-		// }
-		// comboBox.setSelectedIndex(anIndex);
-
-		// comboBox.addActionListener(new ActionListener() {
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// JComboBox cb = (JComboBox) e.getSource();
-		//
-		// for (HomeApp hp : applist) {
-		//
-		// // if ()
-		// //
-		// // textFieldName.setVisible(true);
-		// // textFieldPower.setVisible(true);
-		// // lblRam.setVisible(false);
-		// // lblHdd.setVisible(false);
-		// // textFieldRAM.setVisible(false);
-		// // textFieldHDD.setVisible(false);
-		// }
-		// }
-		// });
-
-		// panel_1.add(comboBox);
-
 		lblName = new JLabel("Name");
 		panel_1.add(lblName);
 
@@ -128,7 +95,7 @@ public class App extends JFrame implements ListSelectionListener {
 		panel_1.add(textFieldName);
 		textFieldName.setColumns(10);
 
-		lblPower = new JLabel("Power");
+		lblPower = new JLabel("Power, W");
 		panel_1.add(lblPower);
 
 		textFieldPower = new JTextField("Мощность");
@@ -136,7 +103,7 @@ public class App extends JFrame implements ListSelectionListener {
 		panel_1.add(textFieldPower);
 		textFieldPower.setColumns(10);
 
-		lblRam = new JLabel("RAM");
+		lblRam = new JLabel("RAM, GB");
 		panel_1.add(lblRam);
 
 		textFieldRAM = new JTextField("Оперативная память");
@@ -144,15 +111,13 @@ public class App extends JFrame implements ListSelectionListener {
 		panel_1.add(textFieldRAM);
 		textFieldRAM.setColumns(10);
 
-		lblHdd = new JLabel("HDD");
+		lblHdd = new JLabel("HDD, TB");
 		panel_1.add(lblHdd);
 
 		textFieldHDD = new JTextField("Жесткий диск");
 		textFieldHDD.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldHDD);
 		textFieldHDD.setColumns(10);
-
-		// if (i == list.getSelectedIndex()) {
 
 		textFieldName.setEnabled(false);
 		textFieldPower.setEnabled(false);
@@ -195,6 +160,9 @@ public class App extends JFrame implements ListSelectionListener {
 								lblHdd.setVisible(true);
 								lblRam.setVisible(true);
 
+								textFieldHDD.setEnabled(false);
+								textFieldRAM.setEnabled(false);
+
 							} else {
 								textFieldName.setText(hp.getName());
 								textFieldPower.setText(hp.getPower() + "");
@@ -218,20 +186,35 @@ public class App extends JFrame implements ListSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				HomeApp appH = new Computer();
-				appH.setName("Компьютер");
+				Computer appH = new Computer();
+				appH.setName("Новый Компьютер");
+				appH.setPower(250);
 
 				listModel.addElement(appH.getName());
 
 				int index = list.getSelectedIndex();
-				if (index == -1) {
-					index = 0;
-				} else {
-					index++;
-				}
 
-				list.setSelectedIndex(index);
+				list.setSelectedIndex(applist.size());
 				list.ensureIndexIsVisible(index);
+				
+//не работает при добавлении нового компа - не уст его поля
+				
+				for (HomeApp hp : applist) {
+					if (list.getSelectedValue().toString().equals(hp.getName())) {
+						if (hp instanceof Computer){
+							textFieldName.setEnabled(true);
+							textFieldPower.setEnabled(true);
+							textFieldHDD.setEnabled(true);
+							textFieldRAM.setEnabled(true);
+							JOptionPane.showMessageDialog(contentPane,
+									"Установите свои значения полей или оставте по-умолчанию");
+							
+						}
+							
+					}
+				}
+				
+				
 			}
 		});
 
@@ -265,6 +248,7 @@ public class App extends JFrame implements ListSelectionListener {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//установить изменения только 1 поля+
 				btnADD.setEnabled(false);
 				btnDEL.setEnabled(false);
 				textFieldName.setEnabled(true);
@@ -283,11 +267,6 @@ public class App extends JFrame implements ListSelectionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				int h = 0;
-				int r = 0;
-				boolean rb = false;
-				boolean hb = false;
-
 				for (HomeApp hp : applist) {
 					if (list.getSelectedValue().toString().equals(hp.getName())) {
 						hp.setName(textFieldName.getText());
@@ -296,10 +275,25 @@ public class App extends JFrame implements ListSelectionListener {
 						listModel.set(index, hp.getName());
 
 						try {
-							hp.setPower(textFieldPower.getText());
+							hp.setPower(Integer.parseInt(textFieldPower.getText()));
 							textFieldPower.setEnabled(false);
 						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(contentPane, "Неверный формат числа");
+						}
+
+						if ((Integer.parseInt(textFieldPower.getText()) > 0)
+								&& (Integer.parseInt(textFieldPower.getText()) <= 1000)) {
+
+							hp.setPower(Integer.parseInt(textFieldPower.getText()));
+							textFieldPower.setEnabled(false);
+							list.setEnabled(true);
+
+						} else {
+							JOptionPane.showMessageDialog(contentPane,
+									"Неверный формат числа. Возможный диапазон Power: от 1 до 1000");
+							textFieldPower.setEnabled(true);
+							list.setEnabled(false);
+
 						}
 
 						if (hp instanceof Computer) {
@@ -310,16 +304,11 @@ public class App extends JFrame implements ListSelectionListener {
 							listModel.set(index, hp.getName());
 
 							try {
-								hp.setPower(textFieldPower.getText());
+								hp.setPower(Integer.parseInt(textFieldPower.getText()));
 								textFieldPower.setEnabled(false);
 							} catch (Exception ex) {
 								JOptionPane.showMessageDialog(contentPane, "Неверный формат числа");
 							}
-
-							// JOptionPane.showMessageDialog(contentPane,
-							// "Неверный формат числа. Возможный диапазон RAM:
-							// от 4 до 32");
-							// textFieldRAM.setEditable(true);
 
 							try {
 								((Computer) hp).setRam(Integer.parseInt(textFieldRAM.getText()));
@@ -348,50 +337,43 @@ public class App extends JFrame implements ListSelectionListener {
 										"Неверный формат числа. Возможный диапазон RAM: от 4 до 32");
 								textFieldRAM.setEnabled(true);
 								list.setEnabled(false);
-
 							}
 
-							for (int i = 250; i <= 5120; i = i + 250) {
+							if (Integer.parseInt(textFieldHDD.getText()) > 0
+									&& Integer.parseInt(textFieldHDD.getText()) < 8) {
+								((Computer) hp).setHdd(Integer.parseInt(textFieldHDD.getText()));
+								textFieldHDD.setEnabled(false);
+								list.setEnabled(true);
+							} else {
+								JOptionPane.showMessageDialog(contentPane,
+										"Неверный формат числа. Возможныйдиапазон HDD: от 1 до 8 терабайт");
+								textFieldHDD.setEnabled(true);
+								list.setEnabled(false);
+							}
 
-								if (Integer.parseInt(textFieldHDD.getText()) == i) {
-									((Computer) hp).setHdd(Integer.parseInt(textFieldHDD.getText()));
-									textFieldHDD.setEnabled(false);
-									list.setEnabled(true);
-								} 
-								 JOptionPane.showMessageDialog(contentPane,
-										 "Неверный формат числа. Возможныйдиапазон HDD: от 250 до 5120 гигабайт");
-									textFieldHDD.setEnabled(true);
-									list.setEnabled(false);
-							
-								
+							if ((Integer.parseInt(textFieldPower.getText()) > 0)
+									&& (Integer.parseInt(textFieldPower.getText()) <= 1000)) {
+
+								((Computer) hp).setPower(Integer.parseInt(textFieldPower.getText()));
+								textFieldPower.setEnabled(false);
+								list.setEnabled(true);
+
+							} else {
+								JOptionPane.showMessageDialog(contentPane,
+										"Неверный формат числа. Возможный диапазон Power: от 1 до 1000");
+								textFieldPower.setEnabled(true);
+								list.setEnabled(false);
 							}
 
 						}
 					}
+
+					btnADD.setEnabled(true);
+					btnDEL.setEnabled(true);
 				}
 			}
 		});
 
-	}
-
-	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		if (e.getValueIsAdjusting() == false) {
-			if (e.getSource() == list) {
-				for (int i = 0; i < listModel.size(); i++) {
-					if (i == list.getSelectedIndex()) {
-						for (HomeApp hp : applist) {
-							if (list.getSelectedValue().toString().equals(hp.getName()))
-								if (hp instanceof Computer) {
-
-								} else {
-
-								}
-						}
-					}
-				}
-			}
-		}
 	}
 }
 
@@ -426,8 +408,8 @@ class HomeApp {
 		return power;
 	}
 
-	public void setPower(String power) {
-		this.power = Integer.parseInt(power);
+	public void setPower(int power) {
+		this.power = power;
 	}
 
 	protected boolean validate(String str) {
@@ -469,7 +451,7 @@ class Computer extends HomeApp {
 
 	public Computer() {
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public int getRam() {
@@ -512,7 +494,7 @@ class Mouse extends HomeApp {
 
 	public Mouse() {
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public int getIndex() {
@@ -535,7 +517,7 @@ class Monitor extends HomeApp {
 
 	public Monitor() {
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public int getIndex() {
@@ -559,7 +541,7 @@ class Keyboard extends HomeApp {
 
 	public Keyboard() {
 		super();
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public int getIndex() {
