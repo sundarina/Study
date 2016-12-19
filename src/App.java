@@ -4,6 +4,8 @@
  * При редактировании другого устройства выдавать сообщение об имени и мощности устройства. 
  * Проверять изменяемые параметры RAM для компьютеров и выдавать соответствующие предупреждения.*/
 
+//Розумняк Дарья
+
 import java.awt.BorderLayout;
 import java.io.*;
 import java.awt.EventQueue;
@@ -48,9 +50,6 @@ public class App extends JFrame {
 	private JButton btnSAVE;
 	JOptionPane except;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -90,7 +89,7 @@ public class App extends JFrame {
 		lblName = new JLabel("Name");
 		panel_1.add(lblName);
 
-		textFieldName = new JTextField("Имя устройства");
+		textFieldName = new JTextField();
 		textFieldName.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldName);
 		textFieldName.setColumns(10);
@@ -98,7 +97,7 @@ public class App extends JFrame {
 		lblPower = new JLabel("Power, W");
 		panel_1.add(lblPower);
 
-		textFieldPower = new JTextField("Мощность");
+		textFieldPower = new JTextField();
 		textFieldPower.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldPower);
 		textFieldPower.setColumns(10);
@@ -106,7 +105,7 @@ public class App extends JFrame {
 		lblRam = new JLabel("RAM, GB");
 		panel_1.add(lblRam);
 
-		textFieldRAM = new JTextField("Оперативная память");
+		textFieldRAM = new JTextField();
 		textFieldRAM.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldRAM);
 		textFieldRAM.setColumns(10);
@@ -114,7 +113,7 @@ public class App extends JFrame {
 		lblHdd = new JLabel("HDD, TB");
 		panel_1.add(lblHdd);
 
-		textFieldHDD = new JTextField("Жесткий диск");
+		textFieldHDD = new JTextField();
 		textFieldHDD.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_1.add(textFieldHDD);
 		textFieldHDD.setColumns(10);
@@ -140,15 +139,18 @@ public class App extends JFrame {
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setFocusable(false);
 
-		list.addListSelectionListener(new ListSelectionListener() {
+		list.addListSelectionListener(new ListSelectionListener() { // обработка выбора в списке
 
 			public void valueChanged(ListSelectionEvent e) {
 				if (list.getSelectedIndex() >= 0) {
 					btnADD.setEnabled(true);
 					btnDEL.setEnabled(true);
+					btnEDIT.setEnabled(true);
+					btnSAVE.setEnabled(true);
 
 					for (HomeApp hp : applist) {
-						if (list.getSelectedValue().toString().equals(hp.getName()))
+						if (list.getSelectedValue().toString().equals(hp.getName())) {
+
 							if (hp instanceof Computer) {
 								textFieldName.setText(hp.getName());
 								textFieldPower.setText(hp.getPower() + "");
@@ -170,8 +172,8 @@ public class App extends JFrame {
 								lblRam.setVisible(false);
 								textFieldHDD.setVisible(false);
 								textFieldRAM.setVisible(false);
-
 							}
+						}
 					}
 				}
 
@@ -186,44 +188,39 @@ public class App extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Computer appH = new Computer();
-				appH.setName("Новый Компьютер");
-				appH.setPower(250);
+				Computer comp = new Computer();
+				applist.add(comp);
+				comp.setName("Новый Компьютер");
+				listModel.addElement(comp.getName());
 
-				listModel.addElement(appH.getName());
+				textFieldName.setName(comp.getName() + "");
+				comp.setPower(250);
+				textFieldPower.setText(comp.getPower() + "");
+				comp.setHdd(2);
+				textFieldHDD.setText(comp.getHdd() + "");
+				comp.setRam(8);
+				textFieldRAM.setText(comp.getRam() + "");
 
+				list.setSelectedIndex(applist.size() - 1);
 				int index = list.getSelectedIndex();
-
-				list.setSelectedIndex(applist.size());
 				list.ensureIndexIsVisible(index);
-				
-//не работает при добавлении нового компа - не уст его поля
-				
-				for (HomeApp hp : applist) {
-					if (list.getSelectedValue().toString().equals(hp.getName())) {
-						if (hp instanceof Computer){
-							textFieldName.setEnabled(true);
-							textFieldPower.setEnabled(true);
-							textFieldHDD.setEnabled(true);
-							textFieldRAM.setEnabled(true);
-							JOptionPane.showMessageDialog(contentPane,
-									"Установите свои значения полей или оставте по-умолчанию");
-							
-						}
-							
-					}
-				}
-				
-				
+
+				JOptionPane.showMessageDialog(contentPane,
+						"Установите свои значения полей кнопкой Edit или оставьте по-умолчанию");
+
 			}
 		});
 
 		btnDEL = new JButton("delete");
 		panel_2.add(btnDEL);
 		btnDEL.setFocusable(false);
+		btnDEL.setEnabled(false);
 
 		btnDEL.addActionListener(new ActionListener() {
+
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				int index = list.getSelectedIndex();
 				listModel.remove(index);
 
@@ -243,25 +240,26 @@ public class App extends JFrame {
 		btnEDIT = new JButton("edit");
 		panel_2.add(btnEDIT);
 		btnEDIT.setFocusable(false);
-
+		btnEDIT.setEnabled(false);
 		btnEDIT.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//установить изменения только 1 поля+
+				
 				btnADD.setEnabled(false);
 				btnDEL.setEnabled(false);
 				textFieldName.setEnabled(true);
 				textFieldPower.setEnabled(true);
 				textFieldHDD.setEnabled(true);
 				textFieldRAM.setEnabled(true);
-
+				list.setEnabled(false);
 			}
 		});
 
 		btnSAVE = new JButton("save");
 		panel_2.add(btnSAVE);
 		btnSAVE.setFocusable(false);
+		btnSAVE.setEnabled(false);
 		btnSAVE.addActionListener(new ActionListener() {
 
 			@Override
@@ -426,7 +424,6 @@ class HomeApp {
 class Computer extends HomeApp {
 	private int ram;
 	private int hdd;
-	private int index = 0;
 
 	public Computer(String name, String power, String ram, String hdd) throws Exception {
 		super(name, power);
@@ -434,7 +431,7 @@ class Computer extends HomeApp {
 		if (this.validate(power)) {
 			this.power = Integer.parseInt(power);
 		} else {
-			throw new Exception("Неверный формат  поля Power");
+			throw new Exception("Неверный формат поля Power");
 		}
 		if (this.validate(ram)) {
 			this.ram = Integer.parseInt(ram);
@@ -472,16 +469,9 @@ class Computer extends HomeApp {
 
 		this.hdd = hdd;
 	}
-
-	public int getIndex() {
-		return index;
-	}
-
 }
 
 class Mouse extends HomeApp {
-
-	private int index = 1;
 
 	public Mouse(String name, String power) throws Exception {
 		super(name, power);
@@ -496,15 +486,9 @@ class Mouse extends HomeApp {
 		super();
 
 	}
-
-	public int getIndex() {
-		return index;
-	}
 }
 
 class Monitor extends HomeApp {
-
-	private int index = 2;
 
 	public Monitor(String name, String power) throws Exception {
 		super(name, power);
@@ -519,16 +503,9 @@ class Monitor extends HomeApp {
 		super();
 
 	}
-
-	public int getIndex() {
-		return index;
-	}
-
 }
 
 class Keyboard extends HomeApp {
-
-	private int index = 3;
 
 	public Keyboard(String name, String power) throws Exception {
 		super(name, power);
@@ -543,9 +520,4 @@ class Keyboard extends HomeApp {
 		super();
 
 	}
-
-	public int getIndex() {
-		return index;
-	}
-
 }
